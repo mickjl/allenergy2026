@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All Energy Australia 2026 - Agenda</title>
+<style>
+  :root {
+    --ink: #1d2733;
+    --muted: #5d6b79;
+    --line: #dde3ea;
+    --bg: #f6f8fa;
+    --card: #ffffff;
+    --accent: #0b6e5f;
+    --hour: 90px;
+    --scale: 1.5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  h1 { font-size: 20px; margin: 0 0 2px; }
+  .sub { color: var(--muted); margin: 0 0 12px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tabs button, .views button, .chip, .clear {
+    font: inherit;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .tabs button.active, .views button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .chip { font-size: 12px; padding: 4px 10px; }
+  .chip .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .chip.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .search {
+    font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; min-width: 220px;
+  }
+  .meta { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .filters { margin-top: 10px; }
+  .filters .label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+
+  main { padding: 16px 20px 40px; }
+  .note { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+
+  /* Timeline grid */
+  .grid-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+  .grid { display: grid; min-width: 100%; }
+  .corner, .rh {
+    position: sticky; top: 0; background: #fff; z-index: 6;
+    border-bottom: 1px solid var(--line); padding: 8px 8px; font-weight: 600; font-size: 12px;
+  }
+  .rh { border-left: 1px solid var(--line); min-width: 190px; }
+  .tcol { position: relative; height: calc((1050 - 480) * var(--scale) * 1px); border-right: 1px solid var(--line); background: #fff; }
+  .tlabel { position: absolute; left: 6px; font-size: 11px; color: var(--muted); transform: translateY(-6px); }
+  .rcol {
+    position: relative;
+    height: calc((1050 - 480) * var(--scale) * 1px);
+    border-left: 1px solid var(--line);
+    background-image: repeating-linear-gradient(to bottom, #eef1f4 0, #eef1f4 1px, transparent 1px, transparent var(--hour));
+    background-position: 0 0;
+  }
+  .blk {
+    position: absolute; left: 4px; right: 4px;
+    border-radius: 6px; padding: 4px 6px; color: #fff; overflow: hidden;
+    font-size: 11.5px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    transition: box-shadow .15s;
+  }
+  .blk .bt { font-weight: 600; opacity: .95; }
+  .blk .ti { font-weight: 600; }
+  .blk .sp { opacity: .92; }
+  .blk.open { height: auto !important; min-height: 60px; overflow: visible; z-index: 10; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+  .blk.open .sp { display: block; }
+
+  /* List view */
+  .group { margin: 18px 0 8px; font-weight: 700; color: var(--accent); font-size: 14px; }
+  .item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 8px; display: grid; grid-template-columns: 110px 1fr; gap: 4px 14px;
+  }
+  .item .when { color: var(--muted); font-size: 12px; padding-top: 2px; }
+  .item .room { font-size: 12px; color: var(--muted); }
+  .item .ti { font-weight: 600; margin-bottom: 2px; }
+  .item .sp { color: #3b4855; font-size: 13px; }
+  .item .tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .pill { font-size: 11px; color: #fff; padding: 2px 8px; border-radius: 999px; }
+  .empty { color: var(--muted); padding: 30px 0; text-align: center; }
+  .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .brand-row a { display: inline-block; line-height: 0; }
+  .brand-row img { height: 44px; width: auto; display: block; }
+  .credit { color: var(--muted); font-size: 13px; }
+  .credit a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .credit a:hover { text-decoration: underline; }
+  .footer-brand { margin: 0 0 14px; }
+  footer { color: var(--muted); font-size: 12px; padding: 0 20px 30px; max-width: 900px; }
+
+  @media (max-width: 700px) {
+    .meta { margin-left: 0; width: 100%; }
+    .search { min-width: 0; width: 100%; }
+    .item { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-row">
+    <a href="http://climatesalad.com/" target="_blank" rel="noopener"><img src="climate-salad-logo.png" alt="Climate Salad"></a>
+    <span class="credit">Brought to you by <a href="http://climatesalad.com/" target="_blank" rel="noopener">Climate Salad</a></span>
+  </div>
+  <h1>All Energy Australia 2026</h1>
+  <p class="sub">Expo Floor &amp; Convention Centre, Wed 28 to Thu 29 October 2026</p>
+  <div class="row">
+    <div class="tabs row" id="tabs"></div>
+    <div class="views row">
+      <button id="v-grid" class="active">Timeline</button>
+      <button id="v-list">List</button>
+    </div>
+    <input id="q" class="search" type="search" placeholder="Search titles, speakers, rooms">
+    <span class="meta" id="count"></span>
+  </div>
+  <div class="filters">
+    <span class="label">Interests (show sessions matching any selected):</span>
+    <span id="chips" class="row" style="display:inline-flex"></span>
+    <button class="clear" id="clear">Clear</button>
+  </div>
+</header>
+
+<main>
+  <p class="note">Tip: on the timeline, click a session to expand it. Rooms are columns, time runs down the page.</p>
+  <div id="view"></div>
+</main>
+
+<footer>
+  <div class="footer-brand">
+    <a href="http://climatesalad.com/" target="_blank" rel="noopener"><img src="climate-salad-logo.png" alt="Climate Salad" style="height:36px;width:auto;display:block;margin-bottom:8px"></a>
+    <span class="credit">Brought to you by <a href="http://climatesalad.com/" target="_blank" rel="noopener">Climate Salad</a></span>
+  </div>
+  Built from the All Energy Australia 2026 conference agenda (PDF printed 25/10/2026). Session titles and speakers may change. Some room placements and times were read from the PDF layout, and some speaker lists are abbreviated, so check the official agenda at conference.all-energy.com.au before finalising your plans.
+</footer>
+
+<script>
+const START = 480;   // 08:00
+const END = 1050;    // 17:30
+const SCALE = 1.5;   // px per minute
+
+const DAYS = {
+  "1": "Day 1: Wed 28 Oct",
+  "2": "Day 2: Thu 29 Oct"
+};
+
+const TAGS = {
+  storage:   { label: "Storage & batteries",      color: "#2a9d8f" },
+  ev:        { label: "EVs & charging",           color: "#457b9d" },
+  grid:      { label: "Grid & networks",          color: "#6d597a" },
+  solar:     { label: "Solar",                    color: "#c9a227" },
+  homes:     { label: "Homes & electrification",  color: "#e07a3f" },
+  policy:    { label: "Policy & regulation",      color: "#264653" },
+  finance:   { label: "Finance & investment",     color: "#588157" },
+  startups:  { label: "Startups & innovation",    color: "#d1495b" },
+  workforce: { label: "Workforce & skills",       color: "#8a5a2b" },
+  community: { label: "Community & consumers",    color: "#3d8fb5" },
+  industry:  { label: "Industry & decarbonisation", color: "#5c6b73" },
+  ai:        { label: "AI & data",                color: "#7b2cbf" },
+  fuels:     { label: "Fuels & gas",              color: "#9c6644" },
+  cpd:       { label: "CPD & technical training", color: "#343a40" }
+};
+
+const ORDER = [
+  "Plenary Hall 3", "Room 220", "Room 219/220", "Room 219", "Room 213",
+  "Room 212 · Startups", "Room 211", "Room 210", "Room 204", "Room 203",
+  "EV Tech & Infrastructure", "Grid & Network", "Energy Management",
+  "Masterclass (CEC CPD)", "Industry Workshop"
+];
+
+// [day, start, end, room, title, speakers, tags]
+const RAW = [
+  // ---------- DAY 1 ----------
+  ["1","08:20","09:05","Plenary Hall 3","Opening: Powering Australia's energy future","Robby Clark (All Energy); Bill Nicholson (Wurundjeri Elder); Dr Brett Watson (Siemens); Jackie Trad (CEC); Jaclyn Symes MP (Vic Govt); David Davis MP (Shadow Minister)",["policy"]],
+  ["1","09:05","10:05","Plenary Hall 3","Dire straits: Boosting energy security with efficiency, electrification and renewables (EEC)","Luke Menzel (mod.); Amandine Denis-Ryan (IEEFA); Peter Halliday (Siemens); Alison Reeve (Grattan); Francis Vierboom (Rewiring Australia)",["policy","homes"]],
+  ["1","10:05","10:50","Plenary Hall 3","Victorian election preview: Victoria's energy future (CEC)","Katie Connolly (mod.); Oliver Nunn (Endgame Analytics); Simon Welsh (Redbridge); William Churchill (CEC); Andrew Killer (Jacobs)",["policy"]],
+  ["1","11:10","12:40","Plenary Hall 3","Financing the transition: Turning policy into bankable projects","Peter Hawkes (chair); Claire Elkin (Engineering Equilibrium); John Alexander (SMA); Guy Olian (Smart Ease); Andrew Bukowski (McCullough Robertson)",["finance","policy"]],
+  ["1","13:30","15:00","Plenary Hall 3","Data centre support for the energy transition","Kane Thornton (chair, CDC); Belinda Dennett (Data Centres Australia); Cameron Evans (Amazon); Laura Caspari (Engie); Hamish McKenzie (Grattan)",["ai","grid"]],
+  ["1","15:30","17:00","Plenary Hall 3","ROI for virtual power plants: Who really wins?","Jo Taranto (chair); Pablo Campillos (AEMO); Dan Adams (Amber Electric); Scott Watkins (KISCO); Leigh Storr (RESINC)",["storage","homes","grid"]],
+
+  ["1","09:30","10:50","Room 212 · Startups","Demos & espressos: Closing the loop on Australia's battery future","Rix Smith (Renewable Metals); Kole Chien (Cosmos Infinity); Portia Rooney (Net Zero Engineering Solutions); Dominic Spooner (Vaulta)",["startups","storage"]],
+  ["1","11:10","12:10","Room 212 · Startups","Supercharge Australia Innovation Challenge #4 awards","Lithium battery startup pitches and the Challenge #4 winner announced live",["startups","storage"]],
+  ["1","13:30","15:00","Room 212 · Startups","AI as a catalyst: Driving the energy transition forward","Nadine 'Noodles' Groves (chair); Vygantas Kirejevas (Zero Parallax); Roxane Bandini-Maeder (Geoneon); Sarah Siayap (Neara)",["ai","startups","grid"]],
+  ["1","15:30","17:00","Room 212 · Startups","Energy scaleup showcase: Industry-ready pitches LIVE","Startups graduating from the Energy Scaleup program pitch to industry partners",["startups"]],
+
+  ["1","11:10","12:10","Room 219/220","Batteries took over the grid: Now what? Control and the next system architecture","Con Hristodoulidis (mod., CEC); Emma Fagan (Akaysha); Doris Spielthenner (Envision); Nic Dorward (Arena); Adriaan van der Merwe (Hamilton Locke)",["storage","grid"]],
+  ["1","13:30","15:00","Room 219/220","Delivering REZ: Supporting workforce and creating regional value","Joanna Stevens (mod.); Kath Elliott (Squadron); Anthea Middleton (Powering Skills); Sonja Malcolm (ACEREZ); Jan Smith; Greg Rafferty",["grid","workforce"]],
+  ["1","15:30","17:00","Room 219/220","The value of flexibility: Home batteries and the future of VPPs","Lachlan Blackhall (chair); Dr Elham Hajhashemi (Energy Consumers Australia); panel on CER flexibility",["storage","homes"]],
+
+  ["1","11:10","12:10","Room 213","Flexible demand management: Unlocking consumer value","Emily Gadaleta (Tesla); Lucy Heales (Synergy); Mena Goyen (Origin); James Brown (SA Power Networks)",["grid","community"]],
+  ["1","13:30","15:00","Room 213","Electrification and energy efficiency","Rob McLeod (chair, EEC); Travis Gribbon (ZECO Energy); Melissa James (CSIRO); Jay Gordon (IEEFA); Sumone Chakravarti (SEC)",["homes"]],
+  ["1","15:30","17:00","Room 213","Energy planning and decarbonisation: Regional net zero and energy literacy","Anna Freeman (chair, EEC); Calvin Lee (Climateworks); Aaron Gray (SECCCA)",["industry","policy"]],
+
+  ["1","11:10","12:10","Room 211","Beyond installed capacity: Maximising performance of utility-scale solar","Vaibhav Joshi (mod.); Pat Behan (Aon); Donald Richmond (RINA); Nicholas Lyos (Raptor Maps); Jimmy Molea (Sungrow); Bea Toribio Lopez (Lightsource bp)",["solar"]],
+  ["1","13:30","15:00","Room 211","Securing our fuel future: Resilience through low-carbon liquid fuels","Fraser Thompson (chair); Mark Hammond (Truck Industry Council); Harry Jobberns (EEC); Clare Grandison (MIAL); James Boyle (Mission Possible)",["fuels","industry"]],
+  ["1","15:30","17:00","Room 211","Developments within the NEM: AI, autobidders and BESS","Aylin Cunsolo (chair); Matt Grover (Fluence); Henry Swisher (OptiGrid); Megan Jackson (Tesla)",["storage","grid"]],
+
+  ["1","11:10","12:10","Room 210","Unlocking the power of electrification: From aspiration to upgrade","Dani Alexander (chair); Katherine McConnell (Brighte); Scott Bocskay (PLF); Marco Salinas (Hubble); Shyamal Pal (Electrifying Australia)",["homes"]],
+  ["1","13:30","15:00","Room 210","Upskilling the workforce: Where to next","Rachael Wilkinson (chair, EEC); Danial Smith (Master Electricians); Vanya Kumar (DEECA); Luke Pickles (Solar Victoria)",["workforce"]],
+  ["1","15:30","17:00","Room 210","Outlook for net zero","Gavin Mooney (chair); Mel Miller-Yule (City of Yarra); Simon Emms (ElectraNet)",["policy","grid"]],
+
+  ["1","11:10","12:10","Room 204","Policy in practice: What's working, what's not","Giles Parkinson (chair, RenewEconomy); Jonathan Eastwood (Nextpower); William Churchill (CEC); Viet Pham (SMBC); Anna Hedgcock (ENGIE); Gero Farruggio (PowerAid)",["policy"]],
+  ["1","13:30","15:00","Room 204","Energy efficiency across multiple touchpoints","Anthony Bell (chair, CEMA Advisory)",["homes","policy"]],
+  ["1","15:30","17:00","Room 204","Lessons from BESS investment","Luke Osborne (chair, Stride); Brooks Richard Geng (Fox ESS); Aaron Zadeh (Shoals); Shane Bannister",["storage","finance"]],
+
+  ["1","11:10","12:10","Room 203","Tackling the challenges of decarbonisation","Owen Pascoe (CEFC); Renae Gasmier (Solar Victoria); Anita Talberg (Climate Resource); Jenna Connellan (Surya); Clare Grandison (MIAL)",["industry","policy"]],
+  ["1","13:30","15:00","Room 203","Large-scale renewables take centre stage","Christiaan Zuur (chair, KPMG)",["solar","grid"]],
+  ["1","15:30","17:00","Room 203","Unpacking consumer and distributed energy resources","Josh Heazlewood (chair, CEFC); Nanduni Nimalsiri (AEMO); panel on unlocking CER value",["homes","grid","community"]],
+
+  ["1","09:20","09:30","EV Tech & Infrastructure","Industry welcome","Julie Delvecchio (CEO, Electric Vehicle Council)",["ev"]],
+  ["1","09:30","10:30","EV Tech & Infrastructure","Where to from here? Policies to electrify to 2035","Aman Gaur (mod., EVC); Rebecca Williamson (NSW Govt); Cassandra Pert (Vic Govt); Alex Grant (ARENA)",["ev","policy"]],
+  ["1","10:30","11:00","EV Tech & Infrastructure","EV charging: Charge point operator roles beyond building","Anita Saunders (Programmed)",["ev"]],
+  ["1","13:30","14:00","EV Tech & Infrastructure","Electric trucking: Lessons learned from Europe","Mahan Perera",["ev"]],
+  ["1","14:00","14:30","EV Tech & Infrastructure","Electrifying heavy transport: Why infrastructure, not vehicles, is the real challenge","James Kennedy (Virtos); Per Elvebakk (Fastcharge)",["ev"]],
+  ["1","14:30","15:30","EV Tech & Infrastructure","No driveway? No problem: EV charging without off-street parking","Samuel Johnson (mod., AusNet) and panel",["ev","homes"]],
+  ["1","15:30","16:30","EV Tech & Infrastructure","AMA: What it takes to build commercially viable EV charging in Australia","Jack Kotlyar (mod., EnergyAustralia); Steve Atchison (ComfortDelGro); Adam Baxter (Ausgrid)",["ev"]],
+
+  ["1","09:20","09:30","Grid & Network","Pathway to a decarbonised grid: Welcome","Adam Knudsen (Dynapower)",["grid"]],
+  ["1","09:30","10:00","Grid & Network","Simulating the transition: Power system modelling for a decarbonised grid","Luke Robinson (AEMO)",["grid"]],
+  ["1","10:00","10:30","Grid & Network","What 100+ BESS projects tell us about what drives returns","Kai-Philipp Kairies (ACCURE Battery Intelligence)",["storage"]],
+  ["1","10:30","11:00","Grid & Network","Gaining value from DC coupling","Andrew Kelley (chair, Dynapower); Dr Jason Meng (OSA); Rob Mailler (Kinelli)",["solar","storage"]],
+  ["1","11:30","12:10","Grid & Network","Distribution: Where to next? Strengthening grid renewal and transmission","Matt Baumgurtel (mod., Hamilton Locke); Ahmed Tayeh (ElectraGlobe)",["grid"]],
+  ["1","13:10","13:40","Grid & Network","EVs, solar and the chaos between the curves","Ana Erceg (Manager, Grid, Evolution AusNet)",["ev","solar","grid"]],
+  ["1","13:40","14:10","Grid & Network","Grid-forming in operation: Insights from a utility-scale BESS","Samuel Wiggins (SMA Australia)",["storage","grid"]],
+  ["1","14:10","14:40","Grid & Network","Delivering reliability at scale: Aligning policy and markets for long-duration storage","Sara Taylor (Hydrostor)",["storage","grid","policy"]],
+  ["1","14:40","15:10","Grid & Network","Storage = grid reliability","Kateryna Kiemele (Hydro Tasmania)",["storage","grid"]],
+  ["1","15:40","16:10","Grid & Network","BESS offtake and PPAs: Contract structures, legal issues and risks","Tanya Denning (K&L Gates)",["storage","finance"]],
+  ["1","16:10","16:40","Grid & Network","The grid forming moment: Connecting an advanced BESS to the NEM","Rob Hills (Fluence)",["storage","grid"]],
+  ["1","16:40","17:10","Grid & Network","Unlocking Australia's grid future: Revenue stacking and the storage-led transition","Matt Baumgurtel (Hamilton Locke)",["storage","policy"]],
+
+  ["1","13:40","14:00","Energy Management","Reframing electrification: Delivering cost-effective net zero in commercial buildings","Session speakers: see official agenda",["industry","homes"]],
+  ["1","15:00","15:20","Energy Management","Unlocking significant incentives for industrial process decarbonisation","Arlen East (Ecovantage)",["industry","finance"]],
+
+  ["1","09:45","10:15","Masterclass (CEC CPD)","Masterclass opening","Brad Schnur (Clean Energy Council)",["cpd"]],
+  ["1","10:15","10:45","Masterclass (CEC CPD)","Overview of standards development process (5 CPD points)","Nic Millar (Standards Australia)",["cpd","policy"]],
+  ["1","10:45","11:30","Masterclass (CEC CPD)","Protection of conductors against overcurrent (10 CPD points)","Aaron Cook (Techsafe Australia)",["cpd"]],
+  ["1","13:30","14:30","Masterclass (CEC CPD)","Switchboards: Assessing existing installations (10 CPD points)","Session speakers: see official agenda",["cpd"]],
+  ["1","15:45","16:15","Masterclass (CEC CPD)","OEM insights, product updates and emerging installation challenges","Brad Schnur (CEC); Leo Ye (Fox ESS); Blair Pester (Winaico); Rod Dewar (Fronius); Mario Stavrakas (Solaredge)",["cpd","solar","storage"]],
+
+  ["1","10:00","10:45","Industry Workshop","Solar for apartments: Gateways to electrification","Toni Shiels (Solar Victoria); Ros Malouf (ACT Government)",["solar","homes"]],
+  ["1","13:00","13:45","Industry Workshop","Beyond the car: How EVs are shaping Victoria's energy system","Victorian Government speakers",["ev","grid"]],
+  ["1","15:00","15:45","Industry Workshop","Lessons from the field: Shaping how we develop offshore wind transmission","Dave O'Neill (mod., VicGrid); Adrian Furner; Vanessa Osborn; Suzanne Waddell",["grid","policy"]],
+
+  // ---------- DAY 2 ----------
+  ["2","09:10","09:25","Plenary Hall 3","Welcome and sponsor address","Fiona Schutt (COO, CEC); Chris Thompson (CEO, Amber)",["policy"]],
+  ["2","09:25","10:10","Plenary Hall 3","The National Technical Regulator: What does it mean for DER?","Fiona Schutt (mod.); Emily Gadaleta (Tesla); Lotte Wolff (Energy Consumers Australia); Louisa Kinnear (Australian Energy Council)",["policy","homes"]],
+  ["2","10:10","10:55","Plenary Hall 3","The flexible energy grid: How homes, businesses and vehicles are reshaping the system","Jeremy Sung (mod., EEC); Kate Barnes (Solar Victoria); Chris Thompson (Amber); Carl Hutchinson (Enel X); Julie Delvecchio (EVC)",["grid","storage","ev"]],
+  ["2","11:10","12:40","Plenary Hall 3","Rooftops and results: State and territory priorities for Australia's home energy future","Matthew Dewhirst (chair, SA Govt); Paul Corkill (NSW Govt); Amber Benjafield (Vic Govt); Scott Oster (SA Govt); Ros Malouf (ACT Govt); Grace Tam",["homes","policy"]],
+  ["2","13:30","15:00","Plenary Hall 3","Integrating data centres with the grid","Christiaan Zuur (chair, KPMG); Justin Siefkes (Shoals); Amir Mehrtash (FYFE); Ruben Jara (Ingeteam)",["ai","grid"]],
+  ["2","15:30","17:00","Plenary Hall 3","Strategic investment and security","Thomas Nann (chair, Allegro Energy); Marija Vujacic (Hitachi Energy); Gloria Chan (CEFC)",["finance","storage"]],
+
+  ["2","09:30","10:50","Room 212 · Startups","Demos & espressos: Startups demoing clean energy innovation","Lloyd Heinrich (MetroElectro); Tian Hui Ting (DC3 Tech); Steve Hoy (Enosi); Heath Warman (Loop Hydrometallurgy)",["startups"]],
+  ["2","11:10","12:40","Room 212 · Startups","Unlocking future industry: How electrification enables new industries","Emma Jenkin (chair, KSB); algae, agritech and cutting-edge innovators",["startups","industry"]],
+  ["2","13:30","15:00","Room 212 · Startups","The startup advantage: How to invest, mentor and partner with startups","Megan Fisher (chair, EnergyLab); Dean Travers (ARENA); Tom Kline (Climate Tech Partners); Suchi Szczepanski (Origin)",["startups","finance"]],
+  ["2","15:30","17:00","Room 212 · Startups","Breakthrough tech pitchfest","Josh Forde (Ackama); pitches from Jenna Connellan (Surya), Amir Taheri (Voltavate), Sahand Karimi (Optigrid) and others",["startups"]],
+
+  ["2","11:10","12:40","Room 219","Tech takes the lead: Technology solutions for clean energy","Carolyn Huston (chair, CSIRO); Andy Sibley (Simply Energy); Graham Arvidson (Australian Vanadium); Gregory Poulos (Bureau Veritas)",["ai","storage"]],
+  ["2","13:30","15:00","Room 219","International perspectives driving innovation","Heath Evans (chair, Climate 4.0 Hub); Cohort showcase with Gabriel Schiano (Amplicity), Pierre-Louis Lee (Sollys France) and others",["startups","grid"]],
+  ["2","15:30","17:00","Room 219","Energy buyers and market trends: State of the PPA Market","Jackie McKeon (chair, BRCA); Dr Chris Briggs (BRCA); Gilles Walgenwitz (ERM); Aylin Cunsolo (Ashurst); Catriona McLeod (European Energy)",["finance","solar"]],
+
+  ["2","11:10","12:40","Room 220","Community engagement in the age of misinformation","Nicola Pero (chair, Iberdrola); Kim Mallee (Community Power Agency); Dan Newlan",["community"]],
+  ["2","13:30","15:00","Room 220","Beyond project by project: Building shared evidence for renewables and nature","Emily Haley (chair, BRIA); Elise Rutherfurd (Clean Energy Council); Lis Ashby (Biodiversity Council); Michael Sale (Wind Prospect); Dr Golo Maurer",["community","policy"]],
+  ["2","15:30","17:00","Room 220","From ambition to delivery: Building Australia's offshore wind industry","Jim Rijks (chair, Iberdrola); Felicity Sands (Offshore Wind Energy Victoria); Eoin Richardson (Jacobs); Mark Wakeham (Ocean Energy Pathway)",["industry","policy"]],
+
+  ["2","11:10","12:10","Room 213","Pathways to energy transition","Heidi Lee (chair, Beyond Zero Emissions); Michael Katz (RELA); Stan Krpan (Solar Victoria)",["policy","industry"]],
+  ["2","13:30","15:00","Room 213","Energy demand management","Stephanie McDougall (chair, Tilt Renewables); Carl Binning (Clean Energy Regulator); Ed Coper (Populares); Dominic Reardon (Cable); Matthew Trachevski (Origin)",["grid","homes","community"]],
+  ["2","15:30","17:00","Room 213","Positioning low-carbon technologies for achieving net zero goals","Melinda Krebsz (chair, Hydrogen Society of Australia); Miro Moss (Haskoning); Azadeh Keshavarzmohammadian",["fuels","industry"]],
+
+  ["2","11:10","12:40","Room 211","Galvanising communities into the conversation","Gabriel Wong (chair, Positive Good); Lyn Bowring (DEECA)",["community"]],
+  ["2","13:30","15:00","Room 211","Talent management strategies and increasing women's participation","Michael Cullen (chair, Future Energy Skills); Rian Kelso (Energy Skills QLD); Mark Burgess (Energy Skills Australia); Gaynor Maree",["workforce"]],
+  ["2","15:30","17:00","Room 211","Investing in innovative energy management","Dr Yuliya Moore (chair, Nexa Advisory); James Rourke-Dunkley (Shell Energy); Gareth Mann (MTA Energy)",["industry","homes"]],
+
+  ["2","11:10","12:40","Room 210","Consumers in the spotlight","Rebecca Huntley (chair, 89 Degrees East); Catherine Wolthuizen (Energy and Water Ombudsman Victoria); Kate Barnes (Solar Victoria)",["community","homes"]],
+  ["2","13:30","15:00","Room 210","Next step in solar power innovation","Richard Petterson (chair, Tindo); Pedro Magalhaes (Arctech); Guy Pritchard (Solar Victoria); Dan Sturrock",["solar"]],
+  ["2","15:30","17:00","Room 210","Quantifying the ROI for renewable energy zones","Lotte Hoekstra (chair, AECOM); Jules Vincent Jusayan (Power Structure Solutions)",["grid","policy"]],
+
+  ["2","11:10","12:40","Room 204","Maximising solar asset performance","Andrew Barrington (chair, Solar Shine); Joel Firth (Brighter Solar Cleaning); John Johnston (Spartan Solar Farm Cleaning); Diana Latorre Espinosa (Plascare)",["solar"]],
+  ["2","13:30","15:00","Room 204","Renewable natural gas: Delivering energy security","Mike Davis (chair, Optimal Renewable Gas); Carl Hollis (GreenPower); David Jettner (Opal); Rachel Savio (Jemena)",["fuels","industry"]],
+  ["2","15:30","17:00","Room 204","Demand management solutions","Tristan Edis (chair, Green Energy Markets); Dan Tebbutt (Enel X); William Taylor (Load shifting and water operations)",["homes","grid"]],
+
+  ["2","11:10","12:40","Room 203","Clean energy goes hi-tech: Agentic AI and robotics","Karl Redenbach (chair, AgenticScale.AI); Daniel Lazarus (Industrias Services Group); Tom Yeshurun (Civ Robotics)",["ai","solar"]],
+  ["2","13:30","15:00","Room 203","Investing in safety and security","Deo Prasad (chair, UNSW); Darren Gladman (SMA Australia); Jonathon Dyson (AZZO); Sharon Santhosh (Valo)",["grid","finance"]],
+  ["2","15:30","17:00","Room 203","Where to next for electrification","Sarah Pick (chair, Mills Oakley); Myles Eftos (Amber Electric); Rebecca Tilbrook (SEC)",["homes","policy"]],
+
+  ["2","09:00","11:00","Industry Workshop","Powering Australia's energy workforce: Co-designing skills and the talent pipeline for 2027 and beyond","Anthea Middleton (chair, Powering Skills); Peter Adams; Carl Binning; Grace Tam; Jimmy Cocking (DKA); Ty Theodore",["workforce"]],
+  ["2","11:10","12:40","Industry Workshop","The new social contract for energy: Moving past social licence to community value","Laura Stewart (chair, PATHMAKER); Andrew Bray (RE Alliance); Matt McNally (Octopus); Josh Johnson (ASL); Mark Hogan (AusNet)",["community","workforce"]],
+  ["2","13:00","13:30","Industry Workshop","First Nations presentation: Self-determination in the energy transition","Luke Isaacs (First Peoples Partnership Lead, SEC)",["community"]],
+  ["2","13:30","15:00","Industry Workshop","First Nations Yarning Circle: Strategic engagement","Facilitator: Dr Chivonne Algeo; Les Wanganeen; Troy Pickwick (Good Energy Minds)",["community"]],
+
+  ["2","09:20","10:00","Grid & Network","Grid resilience and planning","Mark Lampard (chair, AECOM); Adam Knudsen (Dynapower)",["grid"]],
+  ["2","11:30","12:10","Grid & Network","From strategy to execution: Advancing the grid and network management action plan","Stéphane Leyo (mod., Amplicity); Mitch O'Neill (Amplicity)",["grid","policy"]],
+  ["2","12:40","13:10","Grid & Network","Battery revenue: Why the grid defines your returns","Nadali Mahmoudi (EPEC)",["storage","grid"]],
+  ["2","13:10","13:40","Grid & Network","Integration of renewable energy and grid connection challenges","Kaium Mollah (GES Energy)",["grid","solar"]],
+  ["2","13:40","14:10","Grid & Network","Hybrid utility generation systems: Maximising generation and revenue","Adam Surmiak (EDP)",["grid","storage"]],
+  ["2","14:10","14:40","Grid & Network","Wildfire risk quantification: Optimising grid hardening spend","Holly Eagleston (Firescape)",["grid"]],
+  ["2","14:40","15:10","Grid & Network","The new energy landscape powered by microgrids","Dean Zouganelis (Schneider Electric)",["grid"]],
+  ["2","15:10","15:30","Grid & Network","Inverter-based large load interconnection: Challenges and opportunities","Rakibuzzaman Shah (Federation University)",["grid","ai"]],
+  ["2","15:30","15:50","Grid & Network","Stop guessing, start proving: De-risking grid connection","Session speakers: see official agenda",["grid"]],
+  ["2","15:50","16:10","Grid & Network","From battery-ready to hybrid by design: Why the connection queue is shifting","Steve Wilson (Aurecon)",["storage","grid"]],
+  ["2","16:10","16:40","Grid & Network","Connection agreements: Emerging trends and negotiation tips","Sean Duffy (Baker McKenzie); Stephanie Centorame (Baker McKenzie)",["grid","finance"]],
+
+  ["2","09:30","10:30","EV Tech & Infrastructure","Panel: V2G's next frontier, from early deployments to mass adoption","Umair Afzal (mod., EVC) and panel",["ev"]],
+  ["2","11:30","12:15","EV Tech & Infrastructure","Panel: Exploring underserved applications of EV charging","Jessop Tiedeken (mod., EVC) and panel",["ev","homes"]],
+  ["2","12:15","13:00","EV Tech & Infrastructure","Panel: What electric trucking looks like in the real world","Cameron Remington (mod., EVC); Akanksha Sharma; George Koolman (Haskoning); Haider Khan (Valo)",["ev","industry"]],
+  ["2","13:30","14:00","EV Tech & Infrastructure","Lights, chargers, ACTION: EV charging from car park lamp columns","Blaise Northey (ChargePost)",["ev"]],
+  ["2","14:00","14:30","EV Tech & Infrastructure","An update on charging standards: V2G, security, DSO integration and beyond","Riccardo Pagliarella (Greenergenic)",["ev","policy"]],
+  ["2","14:30","15:00","EV Tech & Infrastructure","Delivering EV charging and electrification infrastructure","Jose Quizhpe (Searo)",["ev"]],
+  ["2","15:00","15:40","EV Tech & Infrastructure","Panel: Integrating vehicle-to-grid assets to benefit customers, the grid and industry","Nodoka Nakamichi (chair, Climate KIC); Tim Barson (Amber); Pradeep Anasuri (Sigenergy); Sajid Hasan (BYD); Mark Purcell",["ev","grid"]],
+
+  ["2","11:10","11:30","Energy Management","What do we do with energy data?","Clement Meers (Diagno)",["industry","ai"]],
+  ["2","11:30","11:50","Energy Management","The pathway to industrial thermal decarbonisation","Douglas Russell (Green Energy & Carbon Management)",["industry"]],
+  ["2","11:50","12:10","Energy Management","Making heat pumps hot: Driving awareness across commercial and industrial sectors","Laura Taylor (Australian Alliance for Energy Productivity)",["industry","homes"]],
+  ["2","12:10","12:30","Energy Management","Thermal energy storage: Adding grid flexibility and powering industry","Jenny McTague (Antora Energy)",["storage","industry"]],
+  ["2","12:30","12:50","Energy Management","Reduction of refrigerated warehouse energy consumption by four times","Stefan Jensen (Scantec Refrigeration)",["industry"]],
+
+  ["2","11:00","11:45","Masterclass (CEC CPD)","Common installation defects (10 CPD points)","Sandy Atkins (Energy Safe Victoria)",["cpd","solar"]],
+  ["2","11:45","12:15","Masterclass (CEC CPD)","ANU, NEPKI and CSIP-AUS: Industry update","Laura Jones (ANU)",["cpd","grid"]],
+  ["2","13:00","13:45","Masterclass (CEC CPD)","Powerwall 3 technical training (5 CPD points)","Yan Zhou (Tesla)",["cpd","storage"]],
+  ["2","13:45","14:30","Masterclass (CEC CPD)","CEC industry programs: Key updates, developments and priorities","Wendy McAndrews (CEC); Sam Dunkley (CEC)",["cpd"]],
+  ["2","14:30","15:10","Masterclass (CEC CPD)","Sigenergy sigenstor labelling (10 CPD points)","Tom Peters (AC Solar Warehouse)",["cpd","storage"]],
+  ["2","15:45","16:15","Masterclass (CEC CPD)","Fault finding PV arrays with thermal imagery (5 CPD points)","Blair Pester (Winaico Australia)",["cpd","solar"]],
+
+  ["2","16:40","17:00","Plenary Hall 3","Chair's closing remarks and close of conference","Sponsored by Dynapower",["policy"]]
+];
+
+const SESSIONS = RAW.map((r, i) => ({
+  id: i, d: r[0], s: r[1], e: r[2], r: r[3], t: r[4], p: r[5], g: r[6]
+}));
+
+const state = { day: "1", view: "grid", tags: new Set(), q: "" };
+
+function mins(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
+function esc(x) { return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function color(s) { return TAGS[s.g[0]] ? TAGS[s.g[0]].color : "#555"; }
+
+function matches(s) {
+  if (state.tags.size && !s.g.some(t => state.tags.has(t))) return false;
+  if (state.q) {
+    const hay = (s.t + " " + s.p + " " + s.r).toLowerCase();
+    if (!hay.includes(state.q)) return false;
+  }
+  return true;
+}
+
+function renderTabs() {
+  document.getElementById("tabs").innerHTML = Object.keys(DAYS).map(d =>
+    `<button data-d="${d}" class="${state.day === d ? "active" : ""}">${DAYS[d]}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => { state.day = b.dataset.d; render(); });
+}
+
+function renderChips() {
+  document.getElementById("chips").innerHTML = Object.entries(TAGS).map(([k, v]) =>
+    `<button class="chip ${state.tags.has(k) ? "on" : ""}" data-t="${k}"><span class="dot" style="background:${v.color}"></span>${esc(v.label)}</button>`).join("");
+  document.querySelectorAll("#chips .chip").forEach(c => c.onclick = () => {
+    const t = c.dataset.t;
+    state.tags.has(t) ? state.tags.delete(t) : state.tags.add(t);
+    render();
+  });
+}
+
+function renderGrid(dayList, shown) {
+  const rooms = ORDER.filter(r => dayList.some(s => s.r === r));
+  const h = (END - START) * SCALE;
+  let html = `<div class="grid-wrap"><div class="grid" style="grid-template-columns: 56px repeat(${rooms.length}, minmax(190px, 1fr));">`;
+  html += `<div class="corner">Time</div>`;
+  html += rooms.map(r => `<div class="rh">${esc(r)}</div>`).join("");
+
+  let tl = `<div class="tcol" style="--scale:${SCALE}">`;
+  for (let m = START; m <= END; m += 30) {
+    if (m % 60 === 0) {
+      const y = (m - START) * SCALE;
+      tl += `<div class="tlabel" style="top:${y}px">${String(m / 60).padStart(2, "0")}:00</div>`;
+    }
+  }
+  tl += `</div>`;
+  html += tl;
+
+  rooms.forEach(room => {
+    html += `<div class="rcol" style="height:${h}px">`;
+    shown.filter(s => s.r === room).forEach(s => {
+      const top = (mins(s.s) - START) * SCALE;
+      const height = Math.max((mins(s.e) - mins(s.s)) * SCALE - 3, 22);
+      html += `<div class="blk" style="top:${top}px;height:${height}px;background:${color(s)}" title="${esc(s.t)}">
+        <div class="bt">${s.s}–${s.e}</div>
+        <div class="ti">${esc(s.t)}</div>
+        <div class="sp">${esc(s.p)}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function renderList(shown) {
+  if (!shown.length) return `<div class="empty">No sessions match these filters.</div>`;
+  const sorted = [...shown].sort((a, b) => mins(a.s) - mins(b.s) || a.r.localeCompare(b.r));
+  let html = "", lastTime = null;
+  sorted.forEach(s => {
+    const slot = `${s.s}–${s.e}`;
+    if (slot !== lastTime) { html += `<div class="group">${slot}</div>`; lastTime = slot; }
+    html += `<div class="item">
+      <div class="when">${slot}</div>
+      <div>
+        <div class="room">${esc(s.r)}</div>
+        <div class="ti">${esc(s.t)}</div>
+        <div class="sp">${esc(s.p)}</div>
+        <div class="tags">${s.g.map(t => `<span class="pill" style="background:${TAGS[t].color}">${esc(TAGS[t].label)}</span>`).join("")}</div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function render() {
+  renderTabs();
+  renderChips();
+  const dayList = SESSIONS.filter(s => s.d === state.day);
+  const shown = dayList.filter(matches);
+  document.getElementById("count").textContent = `${shown.length} of ${dayList.length} sessions`;
+  document.getElementById("v-grid").classList.toggle("active", state.view === "grid");
+  document.getElementById("v-list").classList.toggle("active", state.view === "list");
+  const view = document.getElementById("view");
+  view.innerHTML = state.view === "grid" ? renderGrid(dayList, shown) : renderList(shown);
+  if (state.view === "grid") {
+    view.querySelectorAll(".blk").forEach(b => b.onclick = () => b.classList.toggle("open"));
+  }
+}
+
+document.getElementById("v-grid").onclick = () => { state.view = "grid"; render(); };
+document.getElementById("v-list").onclick = () => { state.view = "list"; render(); };
+document.getElementById("q").oninput = e => { state.q = e.target.value.trim().toLowerCase(); render(); };
+document.getElementById("clear").onclick = () => { state.tags.clear(); state.q = ""; document.getElementById("q").value = ""; render(); };
+
+if (window.innerWidth < 700) state.view = "list";
+render();
+</script>
+</body>
+</html>
